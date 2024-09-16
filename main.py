@@ -9,7 +9,7 @@ import csv
 import sys
 
 
-url = "https://lms.snuchennai.edu.in/login/index.php"
+LOGIN_URL = "https://lms.snuchennai.edu.in/login/index.php"
 
 # Predefined message displayed when login successful and credentials incorrect
 # May change in future
@@ -33,7 +33,7 @@ def checkLogin(response):
 
 def login(session, username, password):
     # Get login token from page
-    login_token = BeautifulSoup(session.get(url).text, "html.parser").find(
+    login_token = BeautifulSoup(session.get(LOGIN_URL).text, "html.parser").find(
         "input",
         {"name": "logintoken"},  # type:ignore
     )["value"]
@@ -46,7 +46,7 @@ def login(session, username, password):
         "password": password,
     }
 
-    response = session.post(url, data=data)
+    response = session.post(LOGIN_URL, data=data)
 
     return response
 
@@ -54,7 +54,7 @@ def login(session, username, password):
 # Function to append given username into a report.txt file
 def addReport(username):
     with open("report.txt", "a+") as file:
-        file.write(username)
+        file.write(f"{username}\n")
 
 
 # Function to write the returned HTML page in a file with user's name. To be used if unexpected error occurs.
@@ -81,6 +81,10 @@ def main():
         return
 
     users = getUsers()[0]
+
+    # Clear existing report
+    with open("report.txt", "w") as f:
+        pass
 
     # Iterate over each username in the list (csv)
     for user in users:
