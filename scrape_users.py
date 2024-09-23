@@ -101,7 +101,10 @@ def getUserEmail(session, url):
             "section.node_category:nth-child(1) > div:nth-child(1) > ul:nth-child(2) > li:nth-child(1) > dl:nth-child(1) > dd:nth-child(2) > a:nth-child(1)"
         ).text  # type:ignore
     except AttributeError:
-        userEmail = soup.select_one(".no-overflow").text  # type:ignore
+        try:
+            userEmail = soup.select_one(".no-overflow").text  # type:ignore
+        except AttributeError:
+            userEmail = ""
 
     return userEmail
 
@@ -133,9 +136,12 @@ def main():
 
         for userLink in getUsers(authSession, courseId):
             userEmail = getUserEmail(session, userLink)
-            print(userEmail)
 
-            emailList.append(userEmail)
+            if userEmail != "":
+                print(userEmail)
+                emailList.append(userEmail)
+            else:
+                print(f"Unable to find email for user {userLink}")
 
         listToCsv(emailList)
 
